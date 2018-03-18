@@ -9,6 +9,8 @@ MainWindow::MainWindow(QWidget *parent) :
     DatabaseInitialize();
     // Trick to resize buttons when startup
     QTimer::singleShot(0,this,SLOT(ButtonResize()));
+
+
 }
 
 MainWindow::~MainWindow()
@@ -28,9 +30,7 @@ void MainWindow::DatabaseInitialize(){
     if(XMLParser::DataExists()){
         XMLParser::LoadData();
     }
-    LastRecordMonth=XMLParser::Records.at(XMLParser::Records.size()-1).getMonth();
-    LastRecordYear=XMLParser::Records.at(XMLParser::Records.size()-1).getYear();
-    ui->LastRecordsLabel->setText(ui->LastRecordsLabel->text().append(XMLParser::Records.at(XMLParser::Records.size()-1).getDate()));
+    UpdateLastRecordDate();
 }
 
 void MainWindow::resizeEvent(QResizeEvent* event)
@@ -41,7 +41,8 @@ void MainWindow::resizeEvent(QResizeEvent* event)
 
 void MainWindow::on_AddButton_clicked()
 {
-    AddRecord *AddRecordWindow= new AddRecord(LastRecordYear,LastRecordMonth);
+    AddRecord *AddRecordWindow= new AddRecord();
+    connect(AddRecordWindow,SIGNAL(UpdateLastRecordDate(void)),this,SLOT(UpdateLastRecordDate(void)));
     AddRecordWindow->show();
     //hide();
 }
@@ -54,4 +55,13 @@ void MainWindow::ResizeButtonsImages(){
 
 void MainWindow::ButtonResize(){
     ResizeButtonsImages();
+}
+
+
+void MainWindow::UpdateLastRecordDate(){
+    LastRecordMonth=XMLParser::GetLastMonth();
+    LastRecordYear=XMLParser::GetLastYear();
+    if(LastRecordMonth>0){
+        ui->LastRecordsLabel->setText(ui->LastRecordsLabel->text().append(XMLParser::Records.at(XMLParser::Records.size()-1).getDate()));
+    }
 }

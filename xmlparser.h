@@ -3,6 +3,7 @@
 
 #include <QtXml>
 #include <QFile>
+#include <QString>
 #include <vector>
 #include "record.h"
 
@@ -16,13 +17,15 @@ public:
 
     static std::vector<Record> Records;
 
+    static int GetLastMonth();
+    static int GetLastYear();
 
     static int LoadStructure();
-    static int CreateStructure(std::vector<QString> Labels);
+    static int CreateStructure(std::vector<QString> Labels,std::vector<int> Types,std::vector<bool>Negatives);
     static int LoadData();
     static bool ChangeStructure();
-    static bool AddData();
-    static bool EditData();
+
+    static int SaveData();
 
     static bool StructureExists();
     static bool DataExists();

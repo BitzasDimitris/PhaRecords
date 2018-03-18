@@ -2,6 +2,24 @@
 QString XMLParser::StructurePath="Structure.xml",XMLParser::DataPath="Data.xml";
 std::vector<Record> XMLParser::Records=std::vector<Record>();
 
+int XMLParser::GetLastMonth(){
+    if(Records.size()==0){
+        return -1;
+    }
+    else{
+        return Records.at(Records.size()-1).Month;
+    }
+}
+
+int XMLParser::GetLastYear(){
+    if(Records.size()==0){
+        return -1;
+    }
+    else{
+        return Records.at(Records.size()-1).Year;
+    }
+}
+
 
 int XMLParser::LoadStructure(){
     QFile Structure(StructurePath);
@@ -95,25 +113,67 @@ int XMLParser::LoadData(){
     return OK;
 }
 
-int XMLParser::CreateStructure(std::vector<QString> Labels){
-    QFile Structure(StructurePath);
-    if(Structure.exists()){
-        Structure.remove();
+int XMLParser::SaveData(){
+    QFile Data(DataPath);
+    if(!Data.open(QFile::WriteOnly|QFile::Text)){
+        return FILE_NOT_OPENED;
     }
+     QDomDocument document=QDomDocument();
+     QDomElement topElement=document.createElement("Data");
+     for(int i=0;i<Records.size();i++){
+         Record r=Records.at(i);
+         QDomElement curRecord= document.createElement("Record");
+         QDomElement curmonth= document.createElement("Month");
+         QDomText curmontht= document.createTextNode("Month");
+         curmontht.setData(QString::number(r.Month));
+         curmonth.appendChild(curmontht);
+         curRecord.appendChild(curmonth);
+         QDomElement curyear= document.createElement("Year");
+         QDomText curyeart= document.createTextNode("Year");
+         curyeart.setData(QString::number(r.Year));
+         curyear.appendChild(curyeart);
+         curRecord.appendChild(curyear);
+         QDomElement curentries= document.createElement("Entries");
+         for(int j=0;j<Record::EntriesNumber;j++){
+             QDomElement curelement= document.createElement("element");
+             QDomText text=document.createTextNode("element");
+             float val=r.entries.at(j);
+             text.setData(QString::number(val));
+             curelement.appendChild(text);
+             curentries.appendChild(curelement);
+         }
+         curRecord.appendChild(curentries);
+         topElement.appendChild(curRecord);
+     }
+     document.appendChild(topElement);
+     QTextStream out(&Data);
+     out<<document.toString();
+     Data.close();
+     return OK;
+
+}
+
+int XMLParser::CreateStructure(std::vector<QString> Labels,std::vector<int> Types,std::vector<bool>Negative){
+    QFile Structure(StructurePath);
     if(!Structure.open(QFile::WriteOnly|QFile::Text)){
         return FILE_NOT_OPENED;
     }
     QDomDocument document;
     QDomElement topElement=document.createElement("Structure");
     for(int i=0;i<Labels.size();i++){
-        QDomElement curElement= document.createElement(Labels.at(i));
+        QDomElement curElement=document.createElement(Labels.at(i));
+        curElement.setAttribute("type",Types.at(i));
+        curElement.setAttribute("negative",Negative.at(i));
         QDomText text=document.createTextNode(Labels.at(i));
+        text.setData(Labels.at(i));
+        //TODO Add attributes
         curElement.appendChild(text);
         topElement.appendChild(curElement);
     }
     document.appendChild(topElement);
     QTextStream out(&Structure);
     out<<document.toString();
+    Structure.close();
     return OK;
 }
 

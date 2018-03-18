@@ -23,13 +23,6 @@ Record::Record(int y,int m,std::vector<float> e)
 
 }
 
-int Record::getMonth(){
-    return Month;
-}
-
-int Record::getYear(){
-    return Year;
-}
 
 QString Record::getDate(){
     return QString::number(Month).append("/").append(QString::number(Year));

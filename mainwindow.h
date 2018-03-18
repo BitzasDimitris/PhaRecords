@@ -18,6 +18,8 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
+public slots:
+    void UpdateLastRecordDate();
 
 private slots:
     void on_AddButton_clicked();

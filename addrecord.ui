@@ -61,7 +61,20 @@
      </layout>
     </item>
     <item>
-     <widget class="QTableWidget" name="Entries"/>
+     <widget class="QTableWidget" name="Entries">
+      <property name="font">
+       <font>
+        <family>Arial</family>
+        <pointsize>22</pointsize>
+       </font>
+      </property>
+      <attribute name="horizontalHeaderStretchLastSection">
+       <bool>false</bool>
+      </attribute>
+      <attribute name="verticalHeaderStretchLastSection">
+       <bool>false</bool>
+      </attribute>
+     </widget>
     </item>
     <item>
      <widget class="QPushButton" name="ConfirmButton">

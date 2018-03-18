@@ -9,14 +9,14 @@ bool KeyEnterFilter::eventFilter(QObject *obj, QEvent *event)
         QKeyEvent* key = static_cast<QKeyEvent*>(event);
         if ( (key->key()==Qt::Key_Enter) || (key->key()==Qt::Key_Return) ) {
             QTableWidget* table=static_cast<QTableWidget*>(obj);
-            int row=table->focusWidget()->property("row").toInt();
+            int row=table->currentIndex().row();
             if(row<table->rowCount()-1){
-                table->setCurrentIndex(table->model()->index(row+1,1));
+                table->setCurrentCell(row+1,1);
             }
             else{
-                table->setCurrentIndex(table->model()->index(0,1));
+                table->setCurrentCell(0,1);
             }
-        } else {
+        } else{
             return QObject::eventFilter(obj, event);
         }
 

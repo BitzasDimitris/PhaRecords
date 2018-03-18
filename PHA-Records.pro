@@ -30,7 +30,6 @@ SOURCES += \
     addrecord.cpp \
     xmlparser.cpp \
     record.cpp \
-    input.cpp \
     keyenterfilter.cpp
 
 HEADERS += \
@@ -38,7 +37,6 @@ HEADERS += \
     addrecord.h \
     xmlparser.h \
     record.h \
-    input.h \
     keyenterfilter.h
 
 FORMS += \
