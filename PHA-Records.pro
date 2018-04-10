@@ -30,19 +30,22 @@ SOURCES += \
     addrecord.cpp \
     xmlparser.cpp \
     record.cpp \
-    keyenterfilter.cpp
+    keyenterfilter.cpp \
+    structure.cpp
 
 HEADERS += \
         mainwindow.h \
     addrecord.h \
     xmlparser.h \
     record.h \
-    keyenterfilter.h
+    keyenterfilter.h \
+    structure.h
 
 FORMS += \
         mainwindow.ui \
     addrecord.ui \
-    addrecord.ui
+    addrecord.ui \
+    structure.ui
 
 RESOURCES += \
     icons.qrc

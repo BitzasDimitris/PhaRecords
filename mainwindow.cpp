@@ -65,3 +65,9 @@ void MainWindow::UpdateLastRecordDate(){
         ui->LastRecordsLabel->setText(ui->LastRecordsLabel->text().append(XMLParser::Records.at(XMLParser::Records.size()-1).getDate()));
     }
 }
+
+void MainWindow::on_action_2_triggered()
+{
+    Structure *StructureWindow= new Structure();
+    StructureWindow->show();
+}

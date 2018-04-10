@@ -2,7 +2,7 @@
 
 int Record::EntriesNumber=0;
 std::vector<QString> Record::EntriesLabels=std::vector<QString>();
-std::vector<int> Record::EntriesType=std::vector<int>();
+std::vector<bool> Record::EntriesType=std::vector<bool>();
 std::vector<bool> Record::EntriesNegative=std::vector<bool>();
 
 Record::Record(int y,int m)

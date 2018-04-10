@@ -5,6 +5,7 @@
 #include <QtDebug>
 #include <QTimer>
 #include "addrecord.h"
+#include "structure.h"
 #include "xmlparser.h"
 
 namespace Ui {
@@ -24,6 +25,8 @@ public slots:
 private slots:
     void on_AddButton_clicked();
     void ButtonResize();
+    void on_action_2_triggered();
+
 protected:
     void resizeEvent(QResizeEvent* event)override;
 private:

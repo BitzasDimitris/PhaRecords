@@ -21,7 +21,7 @@ public:
     static int GetLastYear();
 
     static int LoadStructure();
-    static int CreateStructure(std::vector<QString> Labels,std::vector<int> Types,std::vector<bool>Negatives);
+    static int CreateStructure(std::vector<QString> Labels,std::vector<bool> Types,std::vector<bool>Negatives);
     static int LoadData();
     static bool ChangeStructure();
 
