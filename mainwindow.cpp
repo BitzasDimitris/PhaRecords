@@ -22,7 +22,8 @@ MainWindow::~MainWindow()
 
 void MainWindow::DatabaseInitialize(){
     if(!XMLParser::StructureExists()){
-        //OpenStructureEditor
+        Structure *StructureWindow= new Structure();
+        StructureWindow->show();
     }
     else{
         XMLParser::LoadStructure();
@@ -62,7 +63,7 @@ void MainWindow::UpdateLastRecordDate(){
     LastRecordMonth=XMLParser::GetLastMonth();
     LastRecordYear=XMLParser::GetLastYear();
     if(LastRecordMonth>0){
-        ui->LastRecordsLabel->setText(ui->LastRecordsLabel->text().append(XMLParser::Records.at(XMLParser::Records.size()-1).getDate()));
+        ui->LastRecordsLabel->setText(ui->LastRecordsLabel->text().append(Record::Records.at(Record::Records.size()-1).getDate()));
     }
 }
 
@@ -70,4 +71,14 @@ void MainWindow::on_action_2_triggered()
 {
     Structure *StructureWindow= new Structure();
     StructureWindow->show();
+}
+
+void MainWindow::on_EditButton_clicked()
+{
+    if(XMLParser::DataExists()){
+        AddRecord *AddRecordWindow= new AddRecord(LastRecordYear,LastRecordMonth);
+        connect(AddRecordWindow,SIGNAL(UpdateLastRecordDate(void)),this,SLOT(UpdateLastRecordDate(void)));
+        AddRecordWindow->show();
+    }
+
 }

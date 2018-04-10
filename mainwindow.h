@@ -27,6 +27,8 @@ private slots:
     void ButtonResize();
     void on_action_2_triggered();
 
+    void on_EditButton_clicked();
+
 protected:
     void resizeEvent(QResizeEvent* event)override;
 private:

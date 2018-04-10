@@ -65,6 +65,7 @@ void Structure::on_ConfirmButton_clicked()
             }
         }
         XMLParser::CreateStructure(Labels,Types,Negatives);
+        XMLParser::LoadStructure();
     }
     this->close();
 }

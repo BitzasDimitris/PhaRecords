@@ -6,7 +6,11 @@ AddRecord::AddRecord(int Year, int Month,QWidget *parent) :
     ui(new Ui::AddRecord)
 {
     ui->setupUi(this);
-
+    edit=true;
+    this->Year=Year;
+    this->Month=Month;
+    ui->Month->setDate(QDate(2000,Month,1));
+    ui->Year->setDate(QDate(Year,1,1));
     SetupEntries();
     ui->Entries->setFocus();
 }
@@ -53,6 +57,20 @@ void AddRecord::UpdateLastRecordDate(){
     ui->Year->setDate(QDate(Year,1,1));
 }
 
+void AddRecord::UpdateValues(Record rec){
+    QTableWidget *table=ui->Entries;
+    for(int i=0;i<Record::EntriesNumber;i++){
+        QTableWidgetItem *entry=new QTableWidgetItem();
+        if(Record::EntriesType.at(i)){
+            entry->setText(QString::number(rec.entries.at(i)));
+        }
+        else{
+            entry->setText(QString::number((int)rec.entries.at(i)));
+        }
+        table->setItem(i,1,entry);
+    }
+}
+
 void AddRecord::SetupEntries(){
 
     QTableWidget *table=ui->Entries;
@@ -79,7 +97,13 @@ void AddRecord::SetupEntries(){
     table->setHorizontalHeaderItem(1,h2);
     table->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     table->verticalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-
+    if(edit){
+        int result;
+        Record rec=Record::GetRecord(Year,Month,&result);
+        if(result!=-1){
+            UpdateValues(rec);
+        }
+    }
 }
 
 
@@ -89,30 +113,38 @@ void AddRecord::on_ConfirmButton_clicked()
     QTableWidget* table =ui->Entries;
     for(int i=0;i<ui->Entries->rowCount();i++){
         entries.push_back(table->item(i,1)->text().toFloat());
-        table->item(i,1)->setText("0");
+        if(!edit){
+            table->item(i,1)->setText("0");
+        }
     }
-    Record newrec= Record(ui->Year->date().year(),ui->Month->date().month(),entries);
-    XMLParser::Records.push_back(newrec);
-    data_added=true;
-    Year=ui->Year->date().year();
-    Month=ui->Month->date().month();
-    emit MainWindowUpdateLastRecordDate();
-    QDate curdate=QDate::currentDate();
-    if(Year==curdate.year()&&Month==curdate.month()){
-        XMLParser::SaveData();
-        this->close();
+    if(edit){
+        Record::SetRecord(ui->Year->date().year(),ui->Month->date().month(),entries);
     }
     else{
-        if(Month==12){
-            Month=1;
-            Year++;
+        Record newrec= Record(ui->Year->date().year(),ui->Month->date().month(),entries);
+        Record::Records.push_back(newrec);
+        data_added=true;
+        Year=ui->Year->date().year();
+        Month=ui->Month->date().month();
+        emit MainWindowUpdateLastRecordDate();
+        QDate curdate=QDate::currentDate();
+        if(Year==curdate.year()&&Month==curdate.month()){
+            XMLParser::SaveData();
+            this->close();
         }
         else{
-            Month++;
+            if(Month==12){
+                Month=1;
+                Year++;
+            }
+            else{
+                Month++;
+            }
+            ui->Month->setDate(QDate(2000,Month,1));
+            ui->Year->setDate(QDate(Year,1,1));
         }
-        ui->Month->setDate(QDate(2000,Month,1));
-        ui->Year->setDate(QDate(Year,1,1));
     }
+
 }
 
 void AddRecord::on_CancelButton_clicked()
@@ -129,12 +161,25 @@ void AddRecord::on_Month_dateChanged(const QDate &date)
     QDate curdate=QDate::currentDate();
     m=date.month();
     y=ui->Year->date().year();
-    if(m<Month&&y<=Year){
-        ui->Month->setDate(QDate(2000,Month,1));
+    if(edit){
+        if(y==curdate.year()&&m>curdate.month()){
+           ui->Month->setDate(QDate(2000,Month,1));
+        }
+        int result;
+        Record rec=Record::GetRecord(y,m,&result);
+        if(result!=-1){
+            UpdateValues(rec);
+        }
+        else{
+           ui->Month->setDate(QDate(2000,Month,1));
+        }
     }
-    if(y==curdate.year()&&m>curdate.month()){
-       ui->Month->setDate(QDate(2000,Month,1));
+    else{
+        if(m<Month&&y<=Year){
+            ui->Month->setDate(QDate(2000,Month,1));
+        }
     }
+
 }
 
 void AddRecord::on_Year_userDateChanged(const QDate &date)
@@ -143,19 +188,38 @@ void AddRecord::on_Year_userDateChanged(const QDate &date)
     QDate curdate=QDate::currentDate();
     y=date.year();
     m=ui->Month->date().month();
-    if(y<Year){
-        ui->Year->setDate(QDate(Year,1,1));
-    }
-    if(y==Year&&m<Month){
-        ui->Month->setDate(QDate(2000,Month,1));
-    }
+    if(edit){
+        if(y>curdate.year()){
+            ui->Year->setDate(QDate(curdate.year(),1,1));
+        }
 
-    if(y>curdate.year()){
-        ui->Year->setDate(QDate(curdate.year(),1,1));
+        if(y==curdate.year()&&m>curdate.month()){
+           ui->Month->setDate(QDate(2000,curdate.month()+1,1));
+        }
+        int result;
+        Record rec=Record::GetRecord(y,m,&result);
+        if(result!=-1){
+            UpdateValues(rec);
+        }
+        else{
+           ui->Year->setDate(QDate(Year,1,1));
+        }
     }
+    else{
+        if(y<Year){
+            ui->Year->setDate(QDate(Year,1,1));
+        }
+        if(y==Year&&m<Month){
+            ui->Month->setDate(QDate(2000,Month,1));
+        }
 
-    if(y==curdate.year()&&m>curdate.month()){
-       ui->Month->setDate(QDate(2000,curdate.month()+1,1));
+        if(y>curdate.year()){
+            ui->Year->setDate(QDate(curdate.year(),1,1));
+        }
+
+        if(y==curdate.year()&&m>curdate.month()){
+           ui->Month->setDate(QDate(2000,curdate.month()+1,1));
+        }
     }
 }
 
@@ -164,7 +228,7 @@ void AddRecord::on_Entries_cellChanged(int row, int column)
     QTableWidget *table=ui->Entries;
     QString text=table->item(row,column)->text();
     bool b;
-    if(Record::EntriesType.at(row)==0){
+    if(Record::EntriesType.at(row)){
         do{
             text.toFloat(&b);
             if(!b){

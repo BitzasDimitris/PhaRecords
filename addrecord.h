@@ -41,10 +41,12 @@ private:
     Ui::AddRecord *ui;
 
     int Year,Month;
+    bool edit=false;
     bool data_added=false;
 
     void SetupEntries();
     void UpdateLastRecordDate();
+    void UpdateValues(Record rec);
 };
 
 #endif // ADDRECORD_H

@@ -1,22 +1,22 @@
 #include "xmlparser.h"
 QString XMLParser::StructurePath="Structure.xml",XMLParser::DataPath="Data.xml";
-std::vector<Record> XMLParser::Records=std::vector<Record>();
+
 
 int XMLParser::GetLastMonth(){
-    if(Records.size()==0){
+    if(Record::Records.size()==0){
         return -1;
     }
     else{
-        return Records.at(Records.size()-1).Month;
+        return Record::Records.at(Record::Records.size()-1).Month;
     }
 }
 
 int XMLParser::GetLastYear(){
-    if(Records.size()==0){
+    if(Record::Records.size()==0){
         return -1;
     }
     else{
-        return Records.at(Records.size()-1).Year;
+        return Record::Records.at(Record::Records.size()-1).Year;
     }
 }
 
@@ -59,6 +59,10 @@ int XMLParser::LoadStructure(){
        return FILE_NOT_PARCABLE;
     }
     Structure.close();
+    Record::EntriesNumber=0;
+    Record::EntriesLabels.clear();
+    Record::EntriesType.clear();
+    Record::EntriesNegative.clear();
     QDomElement topElement=document.documentElement();
     QDomNode domNode=topElement.firstChild();
     while(!domNode.isNull()){
@@ -128,7 +132,7 @@ int XMLParser::LoadData(){
             }
         }
         if(final){
-            Records.push_back(Record(year,month,e));
+            Record::Records.push_back(Record(year,month,e));
         }
         domNode=domNode.nextSibling();
 
@@ -143,8 +147,8 @@ int XMLParser::SaveData(){
     }
     QDomDocument document=QDomDocument();
     QDomElement topElement=document.createElement("Data");
-    for(int i=0;i<Records.size();i++){
-        Record r=Records.at(i);
+    for(int i=0;i<Record::Records.size();i++){
+        Record r=Record::Records.at(i);
         QDomElement curRecord= document.createElement("Record");
         QDomElement curmonth= document.createElement("Month");
         QDomText curmontht= document.createTextNode("Month");

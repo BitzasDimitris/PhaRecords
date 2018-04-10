@@ -15,7 +15,6 @@ public:
     const static int FILE_NOT_OPENED=2;
     const static int FILE_NOT_PARCABLE=3;
 
-    static std::vector<Record> Records;
 
     static int GetLastMonth();
     static int GetLastYear();
