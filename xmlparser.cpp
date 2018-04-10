@@ -38,7 +38,8 @@ int XMLParser::CreateStructure(std::vector<QString> Labels, std::vector<bool> Ty
     }
     document.appendChild(topElement);
     QTextStream out(&Structure);
-    out<<document.toString();
+    out.setCodec( "utf-8" );
+    out<<document.toString().toUtf8();
     Structure.close();
     return OK;
 }

@@ -35,9 +35,9 @@ void Structure::SetupStructureTable(){
             currentLabel->setText(Record::EntriesLabels.at(i));
             currentType->setCheckState(Record::EntriesType.at(i)?Qt::Checked:Qt::Unchecked);
             currentNegative->setCheckState(Record::EntriesNegative.at(i)?Qt::Checked:Qt::Unchecked);
-            currentLabel->setFlags(item->flags() ^ Qt::ItemIsEditable);
-            currentType->setFlags(item->flags() ^ Qt::ItemIsEditable);
-            currentNegative->setFlags(item->flags() ^ Qt::ItemIsEditable);
+            currentLabel->setFlags(currentLabel->flags() ^ Qt::ItemIsEditable);
+            currentType->setFlags(currentType->flags() ^ Qt::ItemIsEditable);
+            currentNegative->setFlags(currentNegative->flags() ^ Qt::ItemIsEditable);
             table->insertRow(i);
             table->setItem(0,i,currentLabel);
             table->setItem(1,i,currentType);
@@ -104,12 +104,12 @@ void Structure::on_CancelButton_clicked()
 
 void Structure::on_checkBox_stateChanged(int arg1)
 {
-    QMessageBox msg=new QMessageBox();
-    msg.addButton("Αποδοχή",QMessageBox::AcceptRole);
-    msg.addButton("Ακύρωση",QMessageBox::RejectRole);
-    msg.setText("Αν ξεκλειδώσετε τη δομή θα χρειαστεί να διαγραφούν τα παλιά δεδομένα.");
-    msg.show();
-    int result= msg.result();
+    QMessageBox *msg=new QMessageBox();
+    msg->addButton("Αποδοχή",QMessageBox::AcceptRole);
+    msg->addButton("Ακύρωση",QMessageBox::RejectRole);
+    msg->setText("Αν ξεκλειδώσετε τη δομή θα χρειαστεί να διαγραφούν τα παλιά δεδομένα.");
+    msg->show();
+    int result= msg->result();
     if(result==QMessageBox::Accepted){
         ui->Locker->setChecked(true);
         //TODO delete/backup old records
