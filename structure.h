@@ -5,6 +5,7 @@
 #include <QTableWidget>
 #include <QTableWidgetItem>
 #include <QMessageBox>
+#include <QCloseEvent>
 #include "xmlparser.h"
 #include "record.h"
 
@@ -19,7 +20,8 @@ class Structure : public QDialog
 public:
     explicit Structure(QWidget *parent = 0);
     ~Structure();
-
+signals:
+    void MainWindowReSurface();
 private slots:
     void on_ConfirmButton_clicked();
 
@@ -33,6 +35,7 @@ private slots:
 
 private:
     void SetupStructureTable();
+    void closeEvent(QCloseEvent *event);
 
     Ui::Structure *ui;
 };

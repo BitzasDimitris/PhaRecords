@@ -27,8 +27,13 @@ AddRecord::AddRecord(QWidget *parent) :
     ui->Entries->setCurrentCell(0,1);
 }
 
+void AddRecord::closeEvent(QCloseEvent *event){
+    this->deleteLater();
+}
+
 AddRecord::~AddRecord()
 {
+    emit MainWindowReSurface();
     delete ui;
 }
 

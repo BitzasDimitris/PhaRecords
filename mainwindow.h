@@ -2,10 +2,11 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QtDebug>
+#include <QDebug>
 #include <QTimer>
 #include "addrecord.h"
 #include "structure.h"
+#include "chartselector.h"
 #include "xmlparser.h"
 
 namespace Ui {
@@ -21,6 +22,7 @@ public:
     ~MainWindow();
 public slots:
     void UpdateLastRecordDate();
+    void ReSurface();
 
 private slots:
     void on_AddButton_clicked();
@@ -28,6 +30,8 @@ private slots:
     void on_action_2_triggered();
 
     void on_EditButton_clicked();
+
+    void on_StatisticsButton_clicked();
 
 protected:
     void resizeEvent(QResizeEvent* event)override;

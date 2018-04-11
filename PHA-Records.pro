@@ -31,7 +31,9 @@ SOURCES += \
     xmlparser.cpp \
     record.cpp \
     keyenterfilter.cpp \
-    structure.cpp
+    structure.cpp \
+    chartselector.cpp \
+    chart.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -39,13 +41,16 @@ HEADERS += \
     xmlparser.h \
     record.h \
     keyenterfilter.h \
-    structure.h
+    structure.h \
+    chartselector.h \
+    chart.h
 
 FORMS += \
         mainwindow.ui \
     addrecord.ui \
     addrecord.ui \
-    structure.ui
+    structure.ui \
+    chartselector.ui
 
 RESOURCES += \
     icons.qrc

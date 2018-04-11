@@ -43,9 +43,10 @@ void MainWindow::resizeEvent(QResizeEvent* event)
 void MainWindow::on_AddButton_clicked()
 {
     AddRecord *AddRecordWindow= new AddRecord();
-    connect(AddRecordWindow,SIGNAL(UpdateLastRecordDate(void)),this,SLOT(UpdateLastRecordDate(void)));
+    connect(AddRecordWindow,SIGNAL(MainWindowUpdateLastRecordDate()),this,SLOT(UpdateLastRecordDate()));
+    connect(AddRecordWindow,SIGNAL(MainWindowReSurface()),this,SLOT(ReSurface()));
     AddRecordWindow->show();
-    //hide();
+    this->setEnabled(false);
 }
 
 void MainWindow::ResizeButtonsImages(){
@@ -70,15 +71,35 @@ void MainWindow::UpdateLastRecordDate(){
 void MainWindow::on_action_2_triggered()
 {
     Structure *StructureWindow= new Structure();
+    connect(StructureWindow,SIGNAL(MainWindowReSurface()),this,SLOT(ReSurface()));
     StructureWindow->show();
+
+    this->setEnabled(false);
 }
 
 void MainWindow::on_EditButton_clicked()
 {
     if(XMLParser::DataExists()){
         AddRecord *AddRecordWindow= new AddRecord(LastRecordYear,LastRecordMonth);
-        connect(AddRecordWindow,SIGNAL(UpdateLastRecordDate(void)),this,SLOT(UpdateLastRecordDate(void)));
+        connect(AddRecordWindow,SIGNAL(MainWindowUpdateLastRecordDate()),this,SLOT(UpdateLastRecordDate()));
+        connect(AddRecordWindow,SIGNAL(MainWindowReSurface()),this,SLOT(ReSurface()));
         AddRecordWindow->show();
+        this->setEnabled(false);
     }
+}
 
+
+void MainWindow::ReSurface(){
+    qDebug()<<"called";
+    this->setEnabled(true);
+}
+
+void MainWindow::on_StatisticsButton_clicked()
+{
+    if(XMLParser::DataExists()){
+        ChartSelector *ChartSelectorWindow=new ChartSelector();
+        connect(ChartSelectorWindow,SIGNAL(MainWindowReSurface()),this,SLOT(ReSurface()));
+        ChartSelectorWindow->show();
+        this->setEnabled(false);
+    }
 }

@@ -9,8 +9,13 @@ Structure::Structure(QWidget *parent) :
     SetupStructureTable();
 }
 
+void Structure::closeEvent(QCloseEvent *event){
+    this->deleteLater();
+}
+
 Structure::~Structure()
 {
+    emit MainWindowReSurface();
     delete ui;
 }
 
@@ -39,9 +44,9 @@ void Structure::SetupStructureTable(){
             currentType->setFlags(currentType->flags() ^ Qt::ItemIsEditable);
             currentNegative->setFlags(currentNegative->flags() ^ Qt::ItemIsEditable);
             table->insertRow(i);
-            table->setItem(0,i,currentLabel);
-            table->setItem(1,i,currentType);
-            table->setItem(2,i,currentNegative);
+            table->setItem(i,0,currentLabel);
+            table->setItem(i,1,currentType);
+            table->setItem(i,2,currentNegative);
 
         }
     }

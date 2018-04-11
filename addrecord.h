@@ -5,6 +5,7 @@
 #include <QTableWidget>
 #include <QModelIndex>
 #include <QDate>
+#include <QCloseEvent>
 #include "record.h"
 #include "keyenterfilter.h"
 #include "xmlparser.h"
@@ -24,6 +25,7 @@ public:
 
 signals:
     void MainWindowUpdateLastRecordDate();
+    void MainWindowReSurface();
 
 
 private slots:
@@ -47,6 +49,7 @@ private:
     void SetupEntries();
     void UpdateLastRecordDate();
     void UpdateValues(Record rec);
+    void closeEvent(QCloseEvent *event);
 };
 
 #endif // ADDRECORD_H
