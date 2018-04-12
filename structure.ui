@@ -13,6 +13,9 @@
   <property name="windowTitle">
    <string>Επεξεργασία Δομής</string>
   </property>
+  <property name="locale">
+   <locale language="Greek" country="Greece"/>
+  </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <widget class="QTableWidget" name="StructureTable">

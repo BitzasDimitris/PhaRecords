@@ -8,7 +8,8 @@ QT       += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-QT+=xml
+QT += xml
+QT += charts
 TARGET = PHA-Records
 TEMPLATE = app
 
@@ -33,7 +34,8 @@ SOURCES += \
     keyenterfilter.cpp \
     structure.cpp \
     chartselector.cpp \
-    chart.cpp
+    chart.cpp \
+    chartcreator.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -43,14 +45,16 @@ HEADERS += \
     keyenterfilter.h \
     structure.h \
     chartselector.h \
-    chart.h
+    chart.h \
+    chartcreator.h
 
 FORMS += \
         mainwindow.ui \
     addrecord.ui \
     addrecord.ui \
     structure.ui \
-    chartselector.ui
+    chartselector.ui \
+    chartcreator.ui
 
 RESOURCES += \
     icons.qrc

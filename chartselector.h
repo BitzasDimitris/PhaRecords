@@ -9,6 +9,7 @@
 #include <vector>
 #include <QDebug>
 #include "chart.h"
+#include "chartcreator.h"
 
 namespace Ui {
 class ChartSelector;

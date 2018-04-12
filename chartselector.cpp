@@ -32,6 +32,7 @@ void ChartSelector::ResizeButtonsImages(){
     for(int i=0;i<chartButtons.size();i++){
         chartButtons.at(i)->setIconSize(chartButtons.at(i)->size());
     }
+    addButton->setIconSize(addButton->size());
 }
 
 void ChartSelector::ButtonResize(){
@@ -52,13 +53,17 @@ void ChartSelector::LoadChartButtons(){
         glayout->addWidget(chartButtons.at(i),i%3,i/3,0,0);
     }
     addButton= new QPushButton(QIcon(":/add_icon.png"),"",this);
-    addButton->setSizePolicy(QSizePolicy::Preferred,QSizePolicy::Preferred);
-    //connect(addButton,SIGNAL(clicked()),this,SLOT(on_addButton_Clicked()));
+    addButton->setSizePolicy(QSizePolicy::MinimumExpanding,QSizePolicy::MinimumExpanding);
+    addButton->setMinimumSize(50,50);
+    addButton->setMaximumSize(1000,1000);
+    connect(addButton,SIGNAL(clicked()),this,SLOT(on_addButton_Clicked()));
     glayout->addWidget(addButton,Chart::Charts.size()%3,Chart::Charts.size()/3,0,0);
 }
 
 void ChartSelector::on_addButton_Clicked(){
     //TODO ADD chart window and add to charts
+    ChartCreator* chartCreator=new ChartCreator();
+    chartCreator->show();
 }
 
 void ChartSelector::on_charButton_Clicked(int i){
