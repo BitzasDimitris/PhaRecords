@@ -6,11 +6,12 @@ ChartCreator::ChartCreator(QWidget *parent) :
     ui(new Ui::ChartCreator)
 {
     ui->setupUi(this);
+    ui->expression->setEnabled(false);
     populateLabels();
     exampleChart=new QChart();
     populateThemeBox();
 
-    exampleChart->setTheme((QChart::ChartTheme)theme);
+    exampleChart->setTheme((QChart::ChartTheme)currentTheme);
     exampleChart->setAnimationOptions(QChart::SeriesAnimations);
     chartView=new QChartView();
     chartView->setRenderHint(QPainter::Antialiasing);
@@ -151,31 +152,31 @@ void ChartCreator::on_chartTheme_currentIndexChanged(int index)
 {
     switch(index){
     case 0:
-        theme=QChart::ChartThemeLight;
+        currentTheme=QChart::ChartThemeLight;
         break;
     case 1:
-        theme=QChart::ChartThemeBlueCerulean;
+        currentTheme=QChart::ChartThemeBlueCerulean;
         break;
     case 2:
-        theme=QChart::ChartThemeDark;
+        currentTheme=QChart::ChartThemeDark;
         break;
     case 3:
-        theme=QChart::ChartThemeBrownSand;
+        currentTheme=QChart::ChartThemeBrownSand;
         break;
     case 4:
-        theme=QChart::ChartThemeBlueNcs;
+        currentTheme=QChart::ChartThemeBlueNcs;
         break;
     case 5:
-        theme=QChart::ChartThemeHighContrast;
+        currentTheme=QChart::ChartThemeHighContrast;
         break;
     case 6:
-        theme=QChart::ChartThemeBlueIcy;
+        currentTheme=QChart::ChartThemeBlueIcy;
         break;
     case 7:
-        theme=QChart::ChartThemeQt;
+        currentTheme=QChart::ChartThemeQt;
         break;
     }
-    exampleChart->setTheme((QChart::ChartTheme)theme);
+    exampleChart->setTheme((QChart::ChartTheme)currentTheme);
 }
 
 void ChartCreator::on_chartType_currentIndexChanged(int index)
@@ -204,6 +205,9 @@ void ChartCreator::populateLabels(){
     connect(signalMapper,SIGNAL(mapped(int)),this,SLOT(on_labelButton_clicked(int)));
     for(int i=0;i<Record::EntriesNumber;i++){
         QPushButton *labelbutton=new QPushButton(Record::EntriesLabels.at(i));
+        labelbutton->setPalette(ui->addButton->palette());
+        labelbutton->setFlat(true);
+        labelbutton->setAutoFillBackground(true);
         signalMapper->setMapping(labelbutton,i);
         connect(labelbutton, SIGNAL(clicked()), signalMapper, SLOT(map()));
         ui->labelsContainer->addWidget(labelbutton);
@@ -212,6 +216,9 @@ void ChartCreator::populateLabels(){
 
 void ChartCreator::on_labelButton_clicked(int index){
     QString exp=ui->expression->toPlainText();
+    if(!(exp.endsWith(",")||exp.endsWith("+")||exp.endsWith("-")||exp.endsWith("*")||exp.endsWith("/"))&&exp.compare("")!=0){
+        exp+=",";
+    }
     ui->expression->setText(exp+Record::EntriesLabels.at(index));
 }
 
@@ -231,8 +238,86 @@ void ChartCreator::on_allButton_clicked(){
 
 void ChartCreator::on_delimiterButton_clicked(){
     QString exp=ui->expression->toPlainText();
-    if(exp.endsWith(",")){
+    if(exp.endsWith(",")||exp.compare("")==0){
         return;
     }
     ui->expression->setText(exp+",");
+}
+
+void ChartCreator::on_divideButton_clicked()
+{
+    QString exp=ui->expression->toPlainText();
+    if(exp.endsWith(",")||exp.endsWith("+")||exp.endsWith("-")||exp.endsWith("*")||exp.endsWith("/")||exp.compare("")==0){
+        return;
+    }
+    ui->expression->setText(exp+"/");
+}
+
+void ChartCreator::on_multiplyButton_clicked()
+{
+    QString exp=ui->expression->toPlainText();
+    if(exp.endsWith(",")||exp.endsWith("+")||exp.endsWith("-")||exp.endsWith("*")||exp.endsWith("/")||exp.compare("")==0){
+        return;
+    }
+    ui->expression->setText(exp+"*");
+}
+
+void ChartCreator::on_subtractButton_clicked()
+{
+    QString exp=ui->expression->toPlainText();
+    if(exp.endsWith("+")||exp.endsWith("-")||exp.endsWith("*")||exp.endsWith("/")){
+        return;
+    }
+    ui->expression->setText(exp+"-");
+}
+
+void ChartCreator::on_addButton_clicked()
+{
+    QString exp=ui->expression->toPlainText();
+    if(exp.endsWith("+")||exp.endsWith("-")||exp.endsWith("*")||exp.endsWith("/")){
+        return;
+    }
+    ui->expression->setText(exp+"+");
+}
+
+void ChartCreator::on_clearButton_clicked()
+{
+    ui->expression->setText("");
+}
+
+void ChartCreator::on_pushButton_clicked()
+{
+    QString exp=ui->expression->toPlainText();
+    int index=1;
+    for(int i=1;i<exp.size();i++){
+        QChar c=exp.at(exp.size()-i);
+        if(c==','||c=='+'||c=='-'||c=='*'||c=='/'){
+            index=i;
+            break;
+        }
+    }
+    exp=exp.left(exp.size()-index);
+    ui->expression->setText(exp);
+}
+
+void ChartCreator::on_CancelButton_clicked()
+{
+    this->close();
+}
+
+void ChartCreator::on_ConfirmButton_clicked()
+{
+    int type=ui->chartType->currentIndex();
+    int theme=currentTheme;
+    QString expression=ui->expression->toPlainText();
+    QString name=ui->nameText->text();
+    Chart::AddChart(name,type,expression,theme);
+    Chart::SaveCharts();
+    emit updateChartButtons();
+    this->close();
+}
+
+void ChartCreator::on_iconChooseButton_clicked()
+{
+    //TODO choose icon
 }

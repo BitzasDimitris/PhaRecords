@@ -3,21 +3,23 @@
 std::vector<Chart> Chart::Charts=std::vector<Chart>();
 QString Chart::ChartFile="Charts.charts";
 QString Chart::defaultIconPath="statistics_icon.png";
+bool Chart::loaded=false;
 
 Chart::Chart()
 {
 
 }
 
-Chart::Chart(int type, QString expression, int theme,QString iconPath){
+Chart::Chart(QString name,int type, QString expression, int theme,QString iconPath){
+    this->name=name;
     this->type=type;
     this->expression=expression;
     this->theme=theme;
     this->iconPath=iconPath;
 }
 
-void Chart::AddChart(int type,QString expression,int theme,QString iconPath){
-    AddChart(Chart(type,expression,theme,iconPath));
+void Chart::AddChart(QString name,int type,QString expression,int theme,QString iconPath){
+    AddChart(Chart(name,type,expression,theme,iconPath));
 }
 
 void Chart::AddChart(Chart c){
@@ -29,7 +31,7 @@ int Chart::SaveCharts(){
         return NO_CHARTS;
     }
     QFile chartFile(ChartFile);
-    if(!chartFile.open(QIODevice::ReadOnly)){
+    if(!chartFile.open(QIODevice::WriteOnly)){
         qDebug() << "Could not open " << ChartFile;
         return FILE_NOT_OPENED;
     }
@@ -45,8 +47,11 @@ int Chart::SaveCharts(){
 }
 
 int Chart::LoadCharts(){
+    if(loaded)
+        return OK;
+    loaded=true;
     QFile chartFile(ChartFile);
-    if(!chartFile.open(QIODevice::WriteOnly)){
+    if(!chartFile.open(QIODevice::ReadOnly)){
         qDebug() << "Could not open " << ChartFile;
         return FILE_NOT_OPENED;
     }
@@ -67,18 +72,19 @@ bool Chart::ChartFileExists(){
 
 QDataStream &operator<<(QDataStream &out, Chart &chart)
 {
-    out << quint32(chart.getType())<< chart.getExpression()
+    out << chart.getName() << quint32(chart.getType())<< chart.getExpression()
         << quint32(chart.getTheme())<<chart.getIconPath();
     return out;
 }
 
 QDataStream &operator>>(QDataStream &in, Chart &chart)
 {
+    QString name;
     quint32 type;
     QString expression;
     quint32 theme;
     QString iconPath;
-    in >> type >> expression >> theme >> iconPath;
-    chart = Chart(type, expression, theme,iconPath);
+    in >> name >> type >> expression >> theme >> iconPath;
+    chart = Chart(name,type, expression, theme,iconPath);
     return in;
 }

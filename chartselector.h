@@ -25,6 +25,8 @@ public:
 
 signals:
     void MainWindowReSurface();
+public slots:
+    void updateChartbuttons();
 private slots:
     void ButtonResize();
     void on_addButton_Clicked();

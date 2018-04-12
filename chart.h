@@ -20,13 +20,14 @@ public:
     static std::vector<Chart> Charts;
 
     Chart();
-    Chart(int type,QString expression,int theme=0,QString iconPath=defaultIconPath);
+    Chart(QString name,int type,QString expression,int theme=0,QString iconPath=defaultIconPath);
     int getType(){return type;}
     QString getExpression(){return expression;}
     int getTheme(){return theme;}
     QString getIconPath(){return iconPath;}
+    QString getName(){return name;}
 
-    static void AddChart(int type,QString expression,int theme=0,QString iconPath=defaultIconPath);
+    static void AddChart(QString name,int type,QString expression,int theme=0,QString iconPath=defaultIconPath);
     static void AddChart(Chart c);
     static int LoadCharts();
     static int SaveCharts();
@@ -35,12 +36,14 @@ public:
 
 private:
 
+
     int type;
     QString expression;
     int theme;
     QString iconPath;
+    QString name;
 
-
+    static bool loaded;
     static QString ChartFile;
     static QString defaultIconPath;
 
