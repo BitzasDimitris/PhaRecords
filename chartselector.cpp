@@ -7,8 +7,6 @@ ChartSelector::ChartSelector(QWidget *parent) :
 {
     ui->setupUi(this);
     LoadChartButtons();
-    // Trick to resize buttons when startup
-    QTimer::singleShot(0,this,SLOT(ButtonResize()));
 }
 
 void ChartSelector::closeEvent(QCloseEvent *event){
@@ -21,23 +19,8 @@ ChartSelector::~ChartSelector()
     delete ui;
 }
 
-void ChartSelector::resizeEvent(QResizeEvent* event)
-{
-    QMainWindow::resizeEvent(event);
-    ResizeButtonsImages();
-}
 
-void ChartSelector::ResizeButtonsImages(){
 
-    for(int i=0;i<chartButtons.size();i++){
-        chartButtons.at(i)->setIconSize(chartButtons.at(i)->size());
-    }
-    addButton->setIconSize(addButton->size());
-}
-
-void ChartSelector::ButtonResize(){
-    ResizeButtonsImages();
-}
 
 void ChartSelector::LoadChartButtons(){
     QGridLayout *glayout=(QGridLayout*)ui->centralwidget->layout();
@@ -45,22 +28,26 @@ void ChartSelector::LoadChartButtons(){
         delete item->widget();
     }
     signalMapper=new QSignalMapper(this);
-    connect(signalMapper,SIGNAL(mapped(int)),this,SLOT(on_charButton_Clicked(int)));
+    connect(signalMapper,SIGNAL(mapped(int)),this,SLOT(on_chartButton_Clicked(int)));
     Chart::LoadCharts();
     chartButtons.clear();
-    chartButtons=std::vector<QPushButton*>(Chart::Charts.size());
+    chartButtons=std::vector<QToolButton*>(Chart::Charts.size());
     for(int i=0;i<Chart::Charts.size();i++){
-        chartButtons.at(i)=new QPushButton(QIcon(":/"+Chart::Charts.at(i).getIconPath()),Chart::Charts.at(i).getName(),this);
-        chartButtons.at(i)->setMinimumSize(50,50);
-        chartButtons.at(i)->setMaximumSize(1000,1000);
+        chartButtons.at(i)=new QToolButton(this);
+        chartButtons.at(i)->setGeometry(chartButtons.at(i)->geometry().x(),chartButtons.at(i)->geometry().y(),150,150);
+        chartButtons.at(i)->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed);
+        chartButtons.at(i)->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+        chartButtons.at(i)->setIcon(QIcon(":/"+Chart::Charts.at(i).getIconPath()));
+         chartButtons.at(i)->setIconSize(QSize(100,100));
+        chartButtons.at(i)->setText(Chart::Charts.at(i).getName());
         signalMapper->setMapping(chartButtons.at(i), i);
         connect(chartButtons.at(i), SIGNAL(clicked()), signalMapper, SLOT(map()));
         glayout->addWidget(chartButtons.at(i),i%3,i/3,1,1);
     }
     addButton= new QPushButton(QIcon(":/add_icon.png"),"",this);
-    addButton->setSizePolicy(QSizePolicy::MinimumExpanding,QSizePolicy::MinimumExpanding);
-    addButton->setMinimumSize(50,50);
-    addButton->setMaximumSize(1000,1000);
+    addButton->setIconSize(QSize(100,100));
+    addButton->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed);
+    addButton->setGeometry(addButton->geometry().x(),addButton->geometry().y(),150,150);
     connect(addButton,SIGNAL(clicked()),this,SLOT(on_addButton_Clicked()));
     glayout->addWidget(addButton,Chart::Charts.size()%3,Chart::Charts.size()/3,1,1);
 }
@@ -71,11 +58,12 @@ void ChartSelector::on_addButton_Clicked(){
     chartCreator->show();
 }
 
-void ChartSelector::on_charButton_Clicked(int i){
+void ChartSelector::on_chartButton_Clicked(int i){
     //TODO Chart present window and call
+    ChartViewer *chartViewer=new ChartViewer(i);
+    chartViewer->show();
 }
 
 void ChartSelector::updateChartbuttons(){
     LoadChartButtons();
-    ButtonResize();
 }

@@ -4,12 +4,14 @@
 #include <QMainWindow>
 #include <QCloseEvent>
 #include <QPushButton>
+#include <QToolButton>
 #include <QSignalMapper>
 #include <QTimer>
 #include <vector>
 #include <QDebug>
 #include "chart.h"
 #include "chartcreator.h"
+#include "chartviewer.h"
 
 namespace Ui {
 class ChartSelector;
@@ -28,22 +30,17 @@ signals:
 public slots:
     void updateChartbuttons();
 private slots:
-    void ButtonResize();
     void on_addButton_Clicked();
-    void on_charButton_Clicked(int i);
+    void on_chartButton_Clicked(int i);
 protected:
-    void resizeEvent(QResizeEvent* event)override;
     void closeEvent(QCloseEvent *event)override;
 private:
     void LoadChartButtons();
-    void ResizeButtonsImages();
 
     QSignalMapper* signalMapper;
     QPushButton* addButton;
-    std::vector<QPushButton*> chartButtons;
+    std::vector<QToolButton*> chartButtons;
     Ui::ChartSelector *ui;
-
-
 };
 
 #endif // CHARTSELECTOR_H

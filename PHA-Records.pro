@@ -35,7 +35,8 @@ SOURCES += \
     structure.cpp \
     chartselector.cpp \
     chart.cpp \
-    chartcreator.cpp
+    chartcreator.cpp \
+    chartviewer.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -46,7 +47,8 @@ HEADERS += \
     structure.h \
     chartselector.h \
     chart.h \
-    chartcreator.h
+    chartcreator.h \
+    chartviewer.h
 
 FORMS += \
         mainwindow.ui \
@@ -54,7 +56,8 @@ FORMS += \
     addrecord.ui \
     structure.ui \
     chartselector.ui \
-    chartcreator.ui
+    chartcreator.ui \
+    chartviewer.ui
 
 RESOURCES += \
     icons.qrc

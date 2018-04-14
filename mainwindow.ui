@@ -139,6 +139,9 @@
         <height>1000</height>
        </size>
       </property>
+      <property name="layoutDirection">
+       <enum>Qt::LeftToRight</enum>
+      </property>
       <property name="autoFillBackground">
        <bool>true</bool>
       </property>
