@@ -36,7 +36,8 @@ SOURCES += \
     chartselector.cpp \
     chart.cpp \
     chartcreator.cpp \
-    chartviewer.cpp
+    chartviewer.cpp \
+    collection.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -48,7 +49,8 @@ HEADERS += \
     chartselector.h \
     chart.h \
     chartcreator.h \
-    chartviewer.h
+    chartviewer.h \
+    collection.h
 
 FORMS += \
         mainwindow.ui \

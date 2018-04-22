@@ -5,7 +5,22 @@
 #include <QDataStream>
 #include <vector>
 #include <QFile>
+#include <QStringList>
+#include <QDate>
 #include <QDebug>
+#include <QChart>
+#include <QChartView>
+#include <QLineSeries>
+#include <QBarSeries>
+#include <QStackedBarSeries>
+#include <QBarCategoryAxis>
+#include <QBarSet>
+#include <QPieSeries>
+#include <QPieSlice>
+#include "record.h"
+#include "collection.h"
+
+QT_CHARTS_USE_NAMESPACE
 
 class Chart
 {
@@ -26,6 +41,9 @@ public:
     int getTheme(){return theme;}
     QString getIconPath(){return iconPath;}
     QString getName(){return name;}
+
+    bool validateExpression();
+    std::vector<Collection> evaluateExpression(QDate from,QDate to);
 
     static void AddChart(QString name,int type,QString expression,int theme=0,QString iconPath=defaultIconPath);
     static void AddChart(Chart c);

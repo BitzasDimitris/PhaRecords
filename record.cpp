@@ -35,6 +35,14 @@ Record Record::GetRecord(int Year, int Month,int *result){
     return Record(Year,Month);
 }
 
+float Record::evaluate(QString expression){
+    for(int i=0;i<EntriesNumber;i++){
+        expression.replace(EntriesLabels.at(i),QString::number(entries.at(i)));
+    }
+    QScriptEngine engine;
+    return engine.evaluate(expression).toNumber();
+}
+
 bool Record::SetRecord(int Year, int Month, std::vector<float> entries){
     for(int i=0;i<Records.size();i++){
         if(Year==Records.at(i).Year&&Month==Records.at(i).Month){
@@ -47,4 +55,35 @@ bool Record::SetRecord(int Year, int Month, std::vector<float> entries){
 
 QString Record::getDate(){
     return QString::number(Month).append("/").append(QString::number(Year));
+}
+
+void Record::getMinMaxYearMonth(int &minYear,int &minMonth,int &maxYear,int &maxMonth){
+    if(Records.size()==0){
+        minYear=0;
+        minMonth=0;
+        maxYear=0;
+        maxMonth=0;
+        return;
+    }
+    minYear=maxYear=Records.at(0).Year;
+    minMonth=maxMonth=Records.at(0).Month;
+    for(int i=1;i<Records.size();i++){
+        int Year=Records.at(i).Year;
+        int Month=Records.at(i).Month;
+        if(minYear>Year){
+            minYear=Year;
+            minMonth=Month;
+        }
+        if(maxYear<Year){
+            maxYear=Year;
+            maxMonth=Month;
+        }
+        if(minYear==Year&&minMonth>Month){
+            minMonth=Month;
+        }
+        if(maxYear==Year&&maxMonth<Month){
+            maxMonth=Month;
+        }
+    }
+
 }

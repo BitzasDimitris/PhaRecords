@@ -18,6 +18,27 @@ Chart::Chart(QString name,int type, QString expression, int theme,QString iconPa
     this->iconPath=iconPath;
 }
 
+
+bool validateExpression(){
+    return true;
+}
+
+std::vector<Collection> Chart::evaluateExpression(QDate from, QDate to){
+    std::vector<Collection*> collections;
+    QStringList expressions=expression.split(",");
+    for(int i=0;i<expressions.size();i++){
+       Collection collection=Collection();
+        for(int i=0;i<Record::Records.size();i++){
+            Record record=Record::Records.at(i);
+            QDate recordDate=QDate(record.Year,record.Month,1);
+            if(recordDate>=from&&recordDate<to){
+                collection.add(recordDate,record.evaluate(expression));
+            }
+        }
+    }
+}
+
+
 void Chart::AddChart(QString name,int type,QString expression,int theme,QString iconPath){
     AddChart(Chart(name,type,expression,theme,iconPath));
 }
