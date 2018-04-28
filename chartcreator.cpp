@@ -130,8 +130,7 @@ void ChartCreator::SetupPieChart(){
 
     exampleChart->addSeries(series);
     exampleChart->setTitle("Πίτα");
-    exampleChart->legend()->hide();
-
+    exampleChart->legend()->setVisible(true);
     chartView->setChart(exampleChart);
 }
 

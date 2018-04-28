@@ -116,7 +116,7 @@
      </layout>
     </item>
     <item>
-     <widget class="QWidget" name="chartContainer" native="true">
+     <widget class="QFrame" name="chartContainer">
       <layout class="QHBoxLayout" name="horizontalLayout_2"/>
      </widget>
     </item>
@@ -128,7 +128,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>29</height>
+     <height>20</height>
     </rect>
    </property>
   </widget>

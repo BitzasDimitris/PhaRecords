@@ -6,18 +6,40 @@ ChartViewer::ChartViewer(int index,QWidget *parent) :
     ui(new Ui::ChartViewer)
 {
     ui->setupUi(this);
+    blockDateSignals(true);
     chartIndex=index;
     Record::getMinMaxYearMonth(minimumYear,minimumMonth,maximumYear,maximumMonth);
     ui->fromDate->setMinimumDate(QDate(minimumYear,minimumMonth,1));
     ui->fromDate->setMaximumDate(QDate(maximumYear,maximumMonth,1));
     ui->toDate->setMinimumDate(QDate(minimumYear,minimumMonth,1));
     ui->toDate->setMaximumDate(QDate(maximumYear,maximumMonth,1));
-    //TODO set dates for last year
-    //TODO create chart
+    setInitialDates();
+    blockDateSignals(false);
+    // Setup initial chart objects and settings.
+    mainChart=new QChart();
+    mainChart->setTheme((QChart::ChartTheme)Chart::Charts.at(chartIndex).getTheme());
+    mainChart->setAnimationOptions(QChart::SeriesAnimations);
+    chartView= new QChartView();
+    chartView->setRenderHint(QPainter::Antialiasing);
+    createChart();
 }
 ChartViewer::~ChartViewer()
 {
     delete ui;
+}
+
+
+void ChartViewer::setInitialDates(){
+    blockDateSignals(true);
+    ui->fromDate->setDate(QDate(maximumYear,1,1));
+    ui->toDate->setDate(QDate(maximumYear,maximumMonth,1));
+    blockDateSignals(false);
+}
+
+
+void ChartViewer::blockDateSignals(bool state){
+    ui->fromDate->blockSignals(state);
+    ui->toDate->blockSignals(state);
 }
 
 void ChartViewer::on_perComboBox_currentIndexChanged(int index)
@@ -26,40 +48,191 @@ void ChartViewer::on_perComboBox_currentIndexChanged(int index)
         return;
     }
     dateTypeIndex=index;
-    switch(index){
+    createChart();
+}
+
+std::vector<Collection> ChartViewer::getDatasets(){
+    QDate from,to;
+    from=ui->fromDate->date();
+    to=ui->toDate->date();
+    return Chart::Charts.at(chartIndex).evaluateExpression(from,to);
+}
+
+
+void ChartViewer::createChart(){
+    switch(Chart::Charts.at(chartIndex).getType()){
     case 0:
-        perMonthOneYear();
+        createLineChart(getDatasets());
         break;
     case 1:
-        oneMonthPerYear();
+        createBarChart(getDatasets());
         break;
     case 2:
-        perMonthPerYear();
+        createStackedBarChart(getDatasets());
         break;
     case 3:
-        perYear();
+        createPieChart(getDatasets());
+        break;
+    default:
+        createLineChart(getDatasets());
         break;
     }
 }
 
-void ChartViewer::perMonthOneYear(){
+void ChartViewer::createLineChart(std::vector<Collection> collections){
+    clearChart();
+    mainChart->setTitleFont(QFont("Arial",30,2,false));
+    //TODO title according to datetype and AxisX
+    mainChart->setTitle(Chart::Charts.at(chartIndex).getName()+" - "+locale.toString(ui->fromDate->date(),"yyyy"));
+    QDateTimeAxis *axisX=new QDateTimeAxis();
+    axisX->setTickCount(10);
+    axisX->setFormat("MMM");
+    axisX->setLabelsFont(QFont("Arial",15,0,true));
+    axisX->setTitleText(("Μήνας"));
+    axisX->setTitleFont(QFont("Arial",30,2,false));
+    mainChart->addAxis(axisX,Qt::AlignBottom);
+    QValueAxis *axisY=new QValueAxis();
+    axisY->setLabelFormat("%.2f");
+    axisY->setLabelsFont(QFont("Arial",15,0,true));
+    axisY->setTitleText("Τιμή");
+    axisY->setTitleFont(QFont("Arial",30,2,false));
+    mainChart->addAxis(axisY,Qt::AlignLeft);
+    mainChart->legend()->setVisible(true);
+    mainChart->legend()->setFont(QFont("Arial",20,2,false));
+    float minimumValue=collections.at(0).values.at(0);
+    float maximumValue=minimumValue;
 
+    for(int i=0;i<collections.size();i++){
+        QLineSeries *series = new QLineSeries();
+        for(int j=0;j<collections.at(i).values.size();j++){
+            series->append(QPointF(QDateTime(collections.at(i).dates.at(j)).toMSecsSinceEpoch(),collections.at(i).values.at(j)));
+            if(maximumValue<collections.at(i).values.at(j)){
+                maximumValue=collections.at(i).values.at(j);
+            }
+            if(minimumValue>collections.at(i).values.at(j)){
+                minimumValue=collections.at(i).values.at(j);
+            }
+        }
+        series->setName(Chart::Charts.at(chartIndex).getExpression(i));
+        mainChart->addSeries(series);
+        series->attachAxis(axisX);
+    }
+    axisY->setRange(minimumValue,maximumValue);
+    chartView->setChart(mainChart);
+    ui->chartContainer->layout()->addWidget(chartView);
 }
 
-void ChartViewer::perMonthPerYear(){
 
+void ChartViewer::createBarChart(std::vector<Collection> collections){
+
+
+    clearChart();
+    QBarSeries *series=new QBarSeries();
+    std::vector<QBarSet*> sets= std::vector<QBarSet*>();
+    QStringList categories;
+    for(int i=0;i<collections.size();i++){
+        sets.push_back(new QBarSet(Chart::Charts.at(chartIndex).getExpression(i)));
+        for(int j=0;j<collections.at(i).values.size();j++){
+            sets.at(i)->append(collections.at(i).values.at(j));
+            if(i==0){
+                //TODO update according datetype
+                categories.append(locale.toString(collections.at(i).dates.at(j),"MMM"));
+            }
+        }
+        series->append(sets.at(i));
+    }
+    mainChart->addSeries(series);
+    mainChart->setTitleFont(QFont("Arial",30,2,false));
+    //TODO title according to datetype and AxisX
+    mainChart->setTitle(Chart::Charts.at(chartIndex).getName()+" - "+locale.toString(ui->fromDate->date(),"yyyy"));
+    //TODO update axis according to values types and ranges for each barset.
+    QBarCategoryAxis *axisX = new QBarCategoryAxis();
+    axisX->append(categories);
+    axisX->setLabelsFont(QFont("Arial",15,0,true));
+    QValueAxis *axisY=new QValueAxis();
+    axisY->setLabelFormat("%.2f");
+    axisY->setLabelsFont(QFont("Arial",15,0,true));
+    axisY->setTitleText("Τιμή");
+    axisY->setTitleFont(QFont("Arial",30,2,false));
+    series->attachAxis(axisX);
+    series->attachAxis(axisY);
+    mainChart->createDefaultAxes();
+    mainChart->setAxisX(axisX, series);
+    mainChart->setAxisY(axisY,series);
+    mainChart->legend()->setVisible(true);
+    mainChart->legend()->setAlignment(Qt::AlignBottom);
+    mainChart->legend()->setFont(QFont("Arial",30,2,false));
+    chartView->setChart(mainChart);
+    ui->chartContainer->layout()->addWidget(chartView);
 }
 
-void ChartViewer::oneMonthPerYear(){
+void ChartViewer::createStackedBarChart(std::vector<Collection> collections){
 
+    clearChart();
+    std::vector<QBarSet*> sets=std::vector<QBarSet*>();
+    QStackedBarSeries *series = new QStackedBarSeries();
+    QStringList categories;
+    for(int i=0;i<collections.at(0).values.size();i++){
+        sets.push_back(new QBarSet(Chart::Charts.at(chartIndex).getExpression(i)));
+        for(int j=0;j<collections.size();j++){
+            sets.at(i)->append(collections.at(j).values.at(i));
+            if(j==0){
+                //TODO update according datetype
+                categories.append(locale.toString(collections.at(i).dates.at(j),"MMM"));
+            }
+        }
+        series->append(sets.at(i));
+    }
+    mainChart->addSeries(series);
+    mainChart->setTitleFont(QFont("Arial",30,2,false));
+    //TODO title according to datetype and AxisX
+    mainChart->setTitle(Chart::Charts.at(chartIndex).getName()+" - "+locale.toString(ui->fromDate->date(),"yyyy"));
+
+    QBarCategoryAxis *axis = new QBarCategoryAxis();
+    axis->append(categories);
+    mainChart->createDefaultAxes();
+    mainChart->setAxisX(axis,series);
+    mainChart->legend()->setVisible(true);
+    mainChart->legend()->setAlignment(Qt::AlignBottom);
+    chartView->setChart(mainChart);
+    ui->chartContainer->layout()->addWidget(chartView);
 }
 
-void ChartViewer::perYear(){
+void ChartViewer::createPieChart(std::vector<Collection> collections){
 
+
+    clearChart();
+    QPieSeries *series=new QPieSeries();
+    float maximumValue=collections.at(0).values.at(0);
+    int maximumIndex=0;
+    for(int j=0;j<collections.at(0).values.size();j++){
+        if(maximumValue<=collections.at(0).values.at(j)){
+            maximumValue=collections.at(0).values.at(j);
+            maximumIndex=j;
+        }
+        //TODO update according to datetype
+        series->append(locale.toString(collections.at(0).dates.at(j),"MMM"),collections.at(0).values.at(j));
+    }
+    series->slices().at(maximumIndex)->setExploded();
+    mainChart->addSeries(series);
+    mainChart->setTitleFont(QFont("Arial",30,2,false));
+
+    mainChart->setTitle(Chart::Charts.at(chartIndex).getName()+" - "+locale.toString(ui->fromDate->date(),"yyyy"));
+    chartView->setChart(mainChart);
+    ui->chartContainer->layout()->addWidget(chartView);
+}
+
+void ChartViewer::clearChart(){
+    if(mainChart->series().size()>0){
+        mainChart->removeAllSeries();
+        mainChart->removeAxis(mainChart->axisX());
+        mainChart->removeAxis(mainChart->axisY());
+    }
 }
 
 void ChartViewer::on_fromDate_userDateChanged(const QDate &date)
 {
+    blockDateSignals(true);
     switch(dateTypeIndex){
     case 0:
         fromP_M_O_Y();
@@ -74,10 +247,13 @@ void ChartViewer::on_fromDate_userDateChanged(const QDate &date)
         fromP_Y();
         break;
     }
+    createChart();
+    blockDateSignals(false);
 }
 
 void ChartViewer::on_toDate_userDateChanged(const QDate &date)
 {
+    blockDateSignals(true);
     switch(dateTypeIndex){
     case 0:
         toP_M_O_Y();
@@ -92,6 +268,8 @@ void ChartViewer::on_toDate_userDateChanged(const QDate &date)
         toP_Y();
         break;
     }
+    createChart();
+    blockDateSignals(false);
 }
 
 

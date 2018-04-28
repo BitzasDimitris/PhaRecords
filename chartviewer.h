@@ -11,7 +11,12 @@
 #include <QBarSet>
 #include <QPieSeries>
 #include <QPieSlice>
+#include <QDateTimeAxis>
+#include <QValueAxis>
+#include <QLocale>
 #include "record.h"
+#include "chart.h"
+#include "collection.h"
 
 QT_CHARTS_USE_NAMESPACE
 namespace Ui {
@@ -34,10 +39,22 @@ private slots:
     void on_toDate_userDateChanged(const QDate &date);
 
 private:
-    void perMonthPerYear();
-    void oneMonthPerYear();
-    void perMonthOneYear();
-    void perYear();
+
+    void setInitialDates();
+
+    std::vector<Collection> getDatasets();
+
+    void createChart();
+
+    void clearChart();
+
+    void createLineChart(std::vector<Collection> collections);
+    void createBarChart(std::vector<Collection> collections);
+    void createStackedBarChart(std::vector<Collection> collections);
+    void createPieChart(std::vector<Collection> collections);
+
+    void blockDateSignals(bool state);
+
 
     void fromP_M_P_Y();
     void fromO_M_P_Y();
@@ -48,6 +65,11 @@ private:
     void toO_M_P_Y();
     void toP_M_O_Y();
     void toP_Y();
+
+    QChartView* chartView;
+    QChart* mainChart;
+
+    QLocale locale=QLocale::Greek;
 
     Ui::ChartViewer *ui;
     int chartIndex;

@@ -38,6 +38,7 @@ public:
     Chart(QString name,int type,QString expression,int theme=0,QString iconPath=defaultIconPath);
     int getType(){return type;}
     QString getExpression(){return expression;}
+    QString getExpression(int index);
     int getTheme(){return theme;}
     QString getIconPath(){return iconPath;}
     QString getName(){return name;}

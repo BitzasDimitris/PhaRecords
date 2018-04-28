@@ -23,19 +23,25 @@ bool validateExpression(){
     return true;
 }
 
+QString Chart::getExpression(int index){
+    return expression.split(",").at(index);
+}
+
 std::vector<Collection> Chart::evaluateExpression(QDate from, QDate to){
-    std::vector<Collection*> collections;
+    std::vector<Collection> collections;
     QStringList expressions=expression.split(",");
     for(int i=0;i<expressions.size();i++){
        Collection collection=Collection();
-        for(int i=0;i<Record::Records.size();i++){
-            Record record=Record::Records.at(i);
+        for(int j=0;j<Record::Records.size();j++){
+            Record record=Record::Records.at(j);
             QDate recordDate=QDate(record.Year,record.Month,1);
             if(recordDate>=from&&recordDate<to){
-                collection.add(recordDate,record.evaluate(expression));
+                collection.add(recordDate,record.evaluate(expressions.at(i)));
             }
         }
+        collections.push_back(collection);
     }
+    return collections;
 }
 
 
